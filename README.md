@@ -1,115 +1,108 @@
-﻿# P7-WSE-HARDENING-230104040078
-# basic-auth
+👤 Identitas Mahasiswa
+Nama : Muhammad Naufal Jihaadi
+NIM : 230104040078
+Mata Kuliah : Web Service Engineering
+Topik Praktikum : Keamanan, Logging, dan Monitoring RESTful API
+📌 Deskripsi Praktikum
+Praktikum 7 merupakan lanjutan dari project UTS pada mata kuliah Web Service Engineering.
+Pada praktikum ini dilakukan proses hardening terhadap RESTful API berbasis Express.js agar lebih aman, terpantau, dan siap digunakan pada level production minimal.
 
-[![NPM Version][npm-image]][npm-url]
-[![NPM Downloads][downloads-image]][downloads-url]
-[![Node.js Version][node-version-image]][node-version-url]
-[![Build Status][travis-image]][travis-url]
-[![Test Coverage][coveralls-image]][coveralls-url]
+Hardening dilakukan dengan menambahkan lapisan keamanan, logging, error handling global, penggunaan environment variable, serta endpoint monitoring.
 
-Generic basic auth Authorization header field parser for whatever.
+Resource utama API disesuaikan dengan project UTS mahasiswa, yaitu Orders.
 
-## Installation
+🎯 Tujuan Praktikum
+Menerapkan middleware keamanan dasar (Helmet, CORS, Rate Limit)
+Menambahkan logging request secara sistematis
+Mengimplementasikan global error handling
+Menggunakan environment variable (.env) untuk konfigurasi sensitif
+Menyediakan endpoint health check dan monitoring
+Menjaga struktur project Express.js yang rapi dan modular
+🧰 Tools & Dependencies
+Runtime : Node.js v18+
+Framework : Express.js
+Security : Helmet, CORS, express-rate-limit
+Logging : Morgan
+Environment Config : dotenv
+Testing : Postman
+📂 Struktur Folder Project
+p7-WSE-RESTful-API-Express.js-230104040126
+│
+├── app.js
+├── package.json
+├── .env
+├── routes/
+│   └── ordersRoutes.js
+├── middlewares/
+│   └── errorHandler.js
+├── logs/
+│   └── access.log
+└── README.md
+⚙️ Konfigurasi Environment (.env)
+PORT=3000
+NODE_ENV=development
+LOG_FORMAT=dev
+LOG_FILE_PATH=logs/access.log
+ALLOWED_ORIGINS=http://localhost:3000
+RATE_LIMIT_WINDOW_MINUTES=15
+RATE_LIMIT_MAX_REQUESTS=100
+▶️ Cara Menjalankan Aplikasi
+Install dependencies:
+npm install
+Jalankan server:
+npm run dev
+Server berjalan pada:
+http://localhost:3000
+🔐 Fitur Hardening yang Diterapkan
+Helmet → Menambahkan security HTTP headers
+CORS → Membatasi origin tertentu
+Rate Limiting → Mencegah spam dan request berlebihan
+Logging → Mencatat request ke console dan file
+Global Error Handler → Menangani error secara konsisten
+Monitoring → Health check dan metrics endpoint
+📑 Tabel Endpoint (Sesuai Modul Praktikum 7)
+Endpoint Umum
+Method	Endpoint	Keterangan
+GET	/	Root API
+GET	/api/info	Informasi aplikasi
+GET	/api/health	Health check service
+GET	/api/metrics	Monitoring & request count
+GET	/api/error	Simulasi error 500
+Resource Orders (Project UTS)
+Method	Endpoint	Deskripsi
+GET	/api/orders	Menampilkan semua orders
+GET	/api/orders/:id	Menampilkan order berdasarkan ID
+POST	/api/orders	Menambahkan order
+PUT	/api/orders/:id	Mengubah data order
+DELETE	/api/orders/:id	Menghapus order
+🧪 Pengujian API
+Pengujian dilakukan menggunakan Postman sesuai tabel endpoint modul Praktikum 7.
 
-This is a [Node.js](https://nodejs.org/en/) module available through the
-[npm registry](https://www.npmjs.com/). Installation is done using the
-[`npm install` command](https://docs.npmjs.com/getting-started/installing-npm-packages-locally):
+Total 9 screenshot Postman meliputi:
 
-```
-$ npm install basic-auth
-```
+Root endpoint
+API info
+GET resource
+POST resource
+GET resource by ID (valid)
+GET resource by ID (404)
+Rate limit (429)
+Health check
+Metrics
+📊 Logging & Monitoring
+Logging request menggunakan Morgan
+File log tersimpan pada:
+logs/access.log
+Endpoint /api/metrics menampilkan:
+Uptime server
+Jumlah request
+Penggunaan memory
+✅ Kesimpulan
+Dengan penerapan hardening pada Praktikum 7 ini, RESTful API telah:
 
-## API
-
-<!-- eslint-disable no-unused-vars -->
-
-```js
-var auth = require('basic-auth')
-```
-
-### auth(req)
-
-Get the basic auth credentials from the given request. The `Authorization`
-header is parsed and if the header is invalid, `undefined` is returned,
-otherwise an object with `name` and `pass` properties.
-
-### auth.parse(string)
-
-Parse a basic auth authorization header string. This will return an object
-with `name` and `pass` properties, or `undefined` if the string is invalid.
-
-## Example
-
-Pass a Node.js request object to the module export. If parsing fails
-`undefined` is returned, otherwise an object with `.name` and `.pass`.
-
-<!-- eslint-disable no-unused-vars, no-undef -->
-
-```js
-var auth = require('basic-auth')
-var user = auth(req)
-// => { name: 'something', pass: 'whatever' }
-```
-
-A header string from any other location can also be parsed with
-`auth.parse`, for example a `Proxy-Authorization` header:
-
-<!-- eslint-disable no-unused-vars, no-undef -->
-
-```js
-var auth = require('basic-auth')
-var user = auth.parse(req.getHeader('Proxy-Authorization'))
-```
-
-### With vanilla node.js http server
-
-```js
-var http = require('http')
-var auth = require('basic-auth')
-var compare = require('tsscmp')
-
-// Create server
-var server = http.createServer(function (req, res) {
-  var credentials = auth(req)
-
-  // Check credentials
-  // The "check" function will typically be against your user store
-  if (!credentials || !check(credentials.name, credentials.pass)) {
-    res.statusCode = 401
-    res.setHeader('WWW-Authenticate', 'Basic realm="example"')
-    res.end('Access denied')
-  } else {
-    res.end('Access granted')
-  }
-})
-
-// Basic function to validate credentials for example
-function check (name, pass) {
-  var valid = true
-
-  // Simple method to prevent short-circut and use timing-safe compare
-  valid = compare(name, 'john') && valid
-  valid = compare(pass, 'secret') && valid
-
-  return valid
-}
-
-// Listen
-server.listen(3000)
-```
-
-# License
-
-[MIT](LICENSE)
-
-[coveralls-image]: https://badgen.net/coveralls/c/github/jshttp/basic-auth/master
-[coveralls-url]: https://coveralls.io/r/jshttp/basic-auth?branch=master
-[downloads-image]: https://badgen.net/npm/dm/basic-auth
-[downloads-url]: https://npmjs.org/package/basic-auth
-[node-version-image]: https://badgen.net/npm/node/basic-auth
-[node-version-url]: https://nodejs.org/en/download
-[npm-image]: https://badgen.net/npm/v/basic-auth
-[npm-url]: https://npmjs.org/package/basic-auth
-[travis-image]: https://badgen.net/travis/jshttp/basic-auth/master
-[travis-url]: https://travis-ci.org/jshttp/basic-auth
-
+Memiliki lapisan keamanan dasar
+Mampu mencatat dan memonitor aktivitas request
+Menangani error secara konsisten
+Siap digunakan pada level production minimal
+📎 Lampiran
+Screenshot pengujian Postman
