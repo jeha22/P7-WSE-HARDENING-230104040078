@@ -1,0 +1,14 @@
+[
+  {
+    "id": 3,
+    "title": "Workshop Node.js",
+    "date": "2025-12-10",
+    "location": "Lab Komputer"
+  },
+  {
+    "id": 4,
+    "title": "Seminar IoT Kampus",
+    "date": "2025-05-20",
+    "location": "Aula Utama"
+  }
+]
